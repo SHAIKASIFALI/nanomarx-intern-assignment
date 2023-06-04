@@ -15,7 +15,9 @@ const httpCreateDirectory = async (req, res) => {
         "path parameter is missing"
       );
     // check whether the directory already exists
-    const ifExist = await directoryService.findDirectory(path);
+    const ifExist = await directoryService.findDirectory(path, {
+      isRecursive: true,
+    });
     if (ifExist)
       throw new BadRequestError(
         "something went wrong",
@@ -24,7 +26,9 @@ const httpCreateDirectory = async (req, res) => {
     // create all the directories
     await directoryService.createDirectory(path);
     // fetch the created directory
-    const result = await directoryService.findDirectory(path);
+    const result = await directoryService.findDirectory(path, {
+      isRecursive: true,
+    });
     return res.status(StatusCodes.OK).send({
       data: result,
       message: "directory created successfully",
@@ -81,7 +85,9 @@ const httpDeleteDirectory = async (req, res) => {
       );
 
     // check whether the directory with given path exists
-    const ifExist = await directoryService.findDirectory(path);
+    const ifExist = await directoryService.findDirectory(path, {
+      isRecursive: true,
+    });
     if (!ifExist)
       throw new BadRequestError(
         "something went wrong",

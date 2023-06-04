@@ -4,8 +4,7 @@ const RepositoryError = require("../util/error/repositoryError");
 class DirectoryRepository {
   async findDirectory(path, parameter) {
     try {
-      const isRecursive = parameter.isRecursive === "true";
-
+      const isRecursive = parameter.isRecursive;
       let cypherQuery = `
     MATCH (dir:Directory {path: $directoryPath})
     OPTIONAL MATCH (dir)-[:CONTAINS]->(file:File)
@@ -27,6 +26,7 @@ class DirectoryRepository {
       const result = await neo4jSession.run(cypherQuery, {
         directoryPath: path,
       });
+      console.log(result);
       return result;
     } catch (error) {
       console.log(error);

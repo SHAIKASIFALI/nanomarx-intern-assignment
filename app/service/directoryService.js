@@ -45,35 +45,38 @@ class DirectoryService {
   async findDirectory(path, parameter) {
     try {
       const result = await directoryRepository.findDirectory(path, parameter);
-      const record = result.records[0];
+      if (result.records.length > 0) {
+        const record = result.records[0];
 
-      const directory = record.get("dir").properties;
-      const files = record.get("files").map((file) => file.properties);
-      const directories = record
-        .get("directories")
-        .map((dir) => dir.properties);
-      const fileCount = record.get("fileCount").toNumber();
-      const directoryCount = record.get("directoryCount").toNumber();
+        const directory = record.get("dir").properties;
+        const files = record.get("files").map((file) => file.properties);
+        const directories = record
+          .get("directories")
+          .map((dir) => dir.properties);
+        const fileCount = record.get("fileCount").toNumber();
+        const directoryCount = record.get("directoryCount").toNumber();
 
-      let dirObj = {
-        directory,
-        files,
-        directories,
-        fileCount,
-        directoryCount,
-      };
-      if (parameter.isRecursive) {
-        const subFiles = record
-          .get("subFiles")
-          .map((subFile) => subFile.properties);
-        const subFileCount = record.get("subFileCount").toNumber();
-        dirObj = {
-          ...dirObj,
-          subFiles,
-          subFileCount,
+        let dirObj = {
+          directory,
+          files,
+          directories,
+          fileCount,
+          directoryCount,
         };
+        if (parameter.isRecursive) {
+          const subFiles = record
+            .get("subFiles")
+            .map((subFile) => subFile.properties);
+          const subFileCount = record.get("subFileCount").toNumber();
+          dirObj = {
+            ...dirObj,
+            subFiles,
+            subFileCount,
+          };
+        }
+        return dirObj;
       }
-      return result.records.length > 0 ? dirObj : undefined;
+      return undefined;
     } catch (error) {
       console.log(error);
       if (error.name === "RepositoryError") throw error;
